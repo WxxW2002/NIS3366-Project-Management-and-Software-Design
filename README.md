@@ -1,6 +1,17 @@
 ### WX To Do - manage everything everywhere all at once
  项目管理与软件设计小作业
  一个简单的目标为在Linux下使用的任务管理器，用来管理你的工作与学习任务
+
+ demo:
+ boot animation:
+<img src="/demo/boot.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+normal theme:
+<img src="/demo/2.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+color theme:
+<img src="/demo/4.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+image theme:
+<img src="/demo/3.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+
  
  实现的功能
  -----
