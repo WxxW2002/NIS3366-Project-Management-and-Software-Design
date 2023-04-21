@@ -2,9 +2,11 @@
  项目管理与软件设计小作业
  
  一个简单的目标为在Linux下使用的任务管理器，用来管理你的工作与学习任务
-<br>
- demo:
- boot animation:
+
+
+demo:
+
+boot animation:
  
 <img src="/demo/boot.jpg" width = "500" height = "360" alt="LRU list">
 
