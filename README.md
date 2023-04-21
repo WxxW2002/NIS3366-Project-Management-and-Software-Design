@@ -4,16 +4,16 @@
 
  demo:
  boot animation:
-<img src="/demo/boot.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+<img src="/demo/boot.jpg" width = "500" height = "360" alt="LRU list">
 
 normal theme:
-<img src="/demo/2.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+<img src="/demo/2.jpg" width = "500" height = "360" alt="LRU list">
 
 color theme:
-<img src="/demo/4.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+<img src="/demo/4.jpg" width = "500" height = "360" alt="LRU list">
 
 image theme:
-<img src="/demo/3.jpg" width = "500" height = "360" alt="LRU list" align=center/>
+<img src="/demo/3.jpg" width = "500" height = "360" alt="LRU list">
 
  
  实现的功能
