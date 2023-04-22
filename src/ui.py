@@ -1,5 +1,5 @@
 # ui.py
-from PyQt6.QtWidgets import QFrame, QAbstractItemView,QMainWindow, QWidget, QVBoxLayout, QPushButton, QFileDialog,  QColorDialog,  QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QInputDialog, QComboBox, QDateEdit, QMenu
+from PyQt6.QtWidgets import QApplication, QFrame, QAbstractItemView,QMainWindow, QWidget, QVBoxLayout, QPushButton, QFileDialog,  QColorDialog,  QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QInputDialog, QComboBox, QDateEdit, QMenu
 from PyQt6.QtGui import  QAction, QColor, QPalette, QFont
 from PyQt6.QtCore import Qt, QSize, QPoint,  QTimer
 from datetime import datetime, timedelta
@@ -8,6 +8,8 @@ from task import Task
 from task_list import TaskList
 from theme import Theme
 from notifications import Notification
+import json
+import os
 
 class CustomListWidget(QListWidget):
     def __init__(self, parent=None):
@@ -31,11 +33,17 @@ class MainWindow(QMainWindow):
         self.init_ui()
         self.setGeometry(100, 100, 600, 600) 
 
+        QApplication.instance().aboutToQuit.connect(self.save_data)
+
+        # Load data from the local file
+        self.task_data_file = "./data/task_data.json"
+        self.load_data()
+
 
     def init_ui(self):
         self.layout = QVBoxLayout()
 
-            # Define header layout
+        # Define header layout
         header_layout = QVBoxLayout()
 
         # Add title label
@@ -126,7 +134,7 @@ class MainWindow(QMainWindow):
             title, ok_pressed = QInputDialog.getText(self, "New Task", "Task Title:", QLineEdit.EchoMode.Normal, "")
 
         if title and (not priority or not repeat):
-            new_task = Task(title, due_date = datetime.now(), priority = self.priority_combobox.currentText(), repeat = self.repeat_combobox.currentText())
+            new_task = Task(title, due_date = datetime.now() + timedelta(days=1), priority = self.priority_combobox.currentText(), repeat = self.repeat_combobox.currentText())
             self.task_list.create_task(new_task)
             self.task_list.sort_tasks_by_priority()
 
@@ -150,6 +158,10 @@ class MainWindow(QMainWindow):
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
                 item.setForeground(QColor(0, 0, 0) if not task.completed else QColor(210,180,140))
+
+                # Store the Task object in the QListWidgetItem's data
+                item.setData(Qt.ItemDataRole.UserRole, task)
+
                 self.task_list_widget.addItem(item)
             
             self.task_list_widget.setDropIndicatorShown(True)
@@ -184,9 +196,9 @@ class MainWindow(QMainWindow):
 
     def delete_task(self, item):
         row = self.task_list_widget.row(item)
-        task = self.task_list.tasks[row]
-        self.task_list.remove_task(task)
         self.task_list_widget.takeItem(row)
+        self.save_data()
+
 
     def mark_task_completed(self, item):
         # Remove the item from the task list widget
@@ -194,17 +206,18 @@ class MainWindow(QMainWindow):
         self.task_list_widget.takeItem(row)
 
         # Mark the task as completed
-        task = self.task_list.tasks[row]
+        task = item.data(Qt.ItemDataRole.UserRole)
         task.set_completed(True)
 
         # Update the item appearance
-        item.setForeground(QColor(210,180,140))
+        item.setForeground(QColor(210, 180, 140))
 
         # Add the completed task back to the bottom of the list widget
         self.task_list_widget.addItem(item)
 
-        # Move the completed task to the end of the task list
-        self.task_list.move_task(task, len(self.task_list.tasks) - 1)
+        # Save the updated tasks to the file
+        self.save_data()
+
 
 
     def change_theme(self):
@@ -225,8 +238,7 @@ class MainWindow(QMainWindow):
 
     # 设置任务的截止日期
     def set_task_due_time(self, item, days_from_now):
-        task_title = item.text()
-        task = self.task_list.find_task_by_title(task_title)
+        task = item.data(Qt.ItemDataRole.UserRole)
 
         # Calculate the due time
         due_date = datetime.now() + timedelta(days=days_from_now)
@@ -238,6 +250,10 @@ class MainWindow(QMainWindow):
 
         # Schedule the reminder
         QTimer.singleShot(int(reminder_time.total_seconds() * 1000), lambda: self.show_reminder(task))
+
+        # Save the updated tasks to the file
+        self.save_data()
+
 
 
     def show_reminder(self, task):
@@ -277,3 +293,65 @@ class MainWindow(QMainWindow):
     def dropEvent(self, event):
         super(CustomListWidget, self.task_list_widget).dropEvent(event)
         self.update_task_order()
+
+
+    def load_data(self):
+        if os.path.exists(self.task_data_file):
+            with open(self.task_data_file, 'r') as file:
+                file_content = file.read()
+                if file_content:
+                    task_data = json.loads(file_content)
+
+                    for task in task_data:
+                        task_item = QListWidgetItem(task["title"])
+                        task_item.setFlags(task_item.flags() | Qt.ItemFlag.ItemIsEditable)
+                
+                        # Set font size
+                        font = QFont()
+                        font.setPointSize(14)  # Set your desired font size here
+                        task_item.setFont(font)
+
+                        # Set fixed row height
+                        task_item.setSizeHint(QSize(task_item.sizeHint().width(), 40))
+
+                        # Set the alignment to center
+                        task_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                        task_item.setForeground(QColor(0, 0, 0) if not task["completed"] else QColor(210, 180, 140))
+
+                         # Convert the due_date string back to a datetime object
+                        due_date = datetime.strptime(task["due_date"], '%Y-%m-%d %H:%M:%S')
+
+                        # Store the Task object in the QListWidgetItem's data
+                        task_obj = Task(task["title"], priority=task["priority"], repeat=task["repeat"], due_date=due_date, completed=task["completed"])
+                        task_item.setData(Qt.ItemDataRole.UserRole, task_obj)
+
+
+
+                        self.task_list_widget.addItem(task_item)
+
+
+    def save_data(self, clear=False):
+        task_data = []
+
+        for i in range(self.task_list_widget.count()):
+            task_item = self.task_list_widget.item(i)
+            task = task_item.data(Qt.ItemDataRole.UserRole)
+            task_dict = {
+                "title": task.title,
+                "priority": task.priority,
+                "repeat": task.repeat,
+                "due_date": task.due_date.strftime('%Y-%m-%d %H:%M:%S'),  # Convert datetime to string
+                "completed": task.completed
+            }
+            task_data.append(task_dict)
+
+        with open(self.task_data_file, 'w') as file:
+            json.dump(task_data, file, ensure_ascii=False)
+
+        if clear:
+            with open(self.task_data_file, 'w') as file:
+                json.dump([], file, ensure_ascii=False)
+
+
+

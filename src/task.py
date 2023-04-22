@@ -2,7 +2,7 @@
 from datetime import datetime
 
 class Task:
-    def __init__(self, title, due_date=None, due_time=None, reminder_time=None, priority=None, repeat=None, files=None, subtasks=None):
+    def __init__(self, title, due_date=None, due_time=None, reminder_time=None, priority=None, repeat=None, files=None, subtasks=None, completed=False):
         self.title = title
         self.due_date = due_date if due_date else None
         self.due_time = due_time if due_time else None
@@ -11,7 +11,16 @@ class Task:
         self.repeat = repeat if repeat else False
         self.files = files if files else []
         self.subtasks = subtasks if subtasks else []
-        self.completed = False
+        self.completed = completed if completed else False
+
+    def to_dict(self):
+        return {
+            "title": self.title,
+            "priority": self.priority,
+            "repeat": self.repeat,
+            "due_date": self.due_date,
+            "completed": self.completed
+        }
 
     def set_due_date(self, due_date):
         self.due_date = due_date
