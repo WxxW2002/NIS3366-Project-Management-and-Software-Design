@@ -34,4 +34,5 @@ image theme:
  
 ### 使用方法
 **推荐使用**：使用命令 ```Python ./src/main.py```运行任务管理器
+
 （也可在 Linux 系统中，使用命令 ```./bin/main``` 运行可执行文件 main，但可能不稳定）
