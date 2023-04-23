@@ -47,6 +47,7 @@ dependent packages and installation:
 -----
 PyQt6: ```pip install PyQt6```
 pynotifier: ```pip install py-notify```
+(If you are prompted to confirm a certain package, use the command `pip install package-name` to install)
 
 build&run:
 -----
