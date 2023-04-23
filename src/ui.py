@@ -10,6 +10,14 @@ from theme import Theme
 from notifications import Notification
 import json
 import os
+import sys
+
+if getattr(sys, 'frozen', False):
+    # Executable mode (bundled with PyInstaller)
+    basedir = sys._MEIPASS
+else:
+    # Normal script execution mode
+    basedir = os.path.dirname(os.path.abspath(__file__))
 
 class CustomListWidget(QListWidget):
     def __init__(self, parent=None):
@@ -36,16 +44,16 @@ class MainWindow(QMainWindow):
         self.task_list = TaskList()
 
         self.init_ui()
-        self.setGeometry(100, 100, 600, 600) 
+        self.setGeometry(100, 100, 700, 700) 
 
         QApplication.instance().aboutToQuit.connect(self.save_data_and_settings)
 
         # Load data from the local file
-        self.task_data_file = "./data/task_data.json"
+        self.task_data_file = os.path.join(basedir, "data", "task_data.json")
         self.load_data()
 
         # Load settings from the local file
-        self.settings_file = "./data/settings.json"
+        self.settings_file = os.path.join(basedir, "data", "settings.json")
         self.load_settings()
 
 
@@ -239,7 +247,8 @@ class MainWindow(QMainWindow):
 
 
     def set_background_image(self, file_name):
-        self.setStyleSheet(f"background-image: url({file_name});")
+        abs_file_name = os.path.join(basedir, file_name)
+        self.setStyleSheet(f"background-image: url({abs_file_name});")
 
     def change_background_color(self):
         color = QColorDialog.getColor()
