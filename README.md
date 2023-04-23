@@ -33,5 +33,5 @@ image theme:
  - [x] 开机引导界面：在打开软件时，会有一个引导动画（动画图片可自定义）
  
 ### 使用方法
-进入src目录，使用命令 ```Python main.py``` 
-在 Linux 系统中，使用命令 ```./bin/main``` 运行可执行文件 main
+**推荐使用**：使用命令 ```Python ./src/main.py```运行任务管理器
+（也可在 Linux 系统中，使用命令 ```./bin/main``` 运行可执行文件 main，但可能不稳定）
