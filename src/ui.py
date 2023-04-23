@@ -15,11 +15,16 @@ class CustomListWidget(QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.last_selected_setting = "color"
+
     def mousePressEvent(self, event):
         item = self.itemAt(event.pos())
         if not item:
             self.clearSelection()
         super().mousePressEvent(event)
+
+    def set_last_selected_setting(self, setting):
+        self.last_selected_setting = setting
 
 
 class MainWindow(QMainWindow):
@@ -33,11 +38,15 @@ class MainWindow(QMainWindow):
         self.init_ui()
         self.setGeometry(100, 100, 600, 600) 
 
-        QApplication.instance().aboutToQuit.connect(self.save_data)
+        QApplication.instance().aboutToQuit.connect(self.save_data_and_settings)
 
         # Load data from the local file
         self.task_data_file = "./data/task_data.json"
         self.load_data()
+
+        # Load settings from the local file
+        self.settings_file = "./data/settings.json"
+        self.load_settings()
 
 
     def init_ui(self):
@@ -95,7 +104,6 @@ class MainWindow(QMainWindow):
         self.task_list_widget.dropEvent = self.dropEvent  
 
         self.controls_layout = QHBoxLayout()
-
         self.new_task_button = QPushButton("New Task", self)
         self.new_task_button.clicked.connect(self.create_new_task)
         self.controls_layout.addWidget(self.new_task_button)
@@ -226,6 +234,8 @@ class MainWindow(QMainWindow):
         if file_name:
             self.theme.set_background_image(file_name)
             self.setStyleSheet(self.theme.get_style_sheet())
+            self.task_list_widget.set_last_selected_setting("image")
+            self.save_settings()
 
 
     def set_background_image(self, file_name):
@@ -235,7 +245,9 @@ class MainWindow(QMainWindow):
         color = QColorDialog.getColor()
         if color.isValid():
             self.setStyleSheet(f"background-color: {color.name()};")
-
+            self.task_list_widget.set_last_selected_setting("color")
+            self.save_settings()
+            
     # 设置任务的截止日期
     def set_task_due_time(self, item, days_from_now):
         task = item.data(Qt.ItemDataRole.UserRole)
@@ -354,4 +366,36 @@ class MainWindow(QMainWindow):
                 json.dump([], file, ensure_ascii=False)
 
 
+    def save_settings(self):
+        settings = {}
 
+        if self.task_list_widget.last_selected_setting == "image":
+            settings["background_image"] = self.theme.background_image
+            settings["background_color"] = None
+        elif self.task_list_widget.last_selected_setting == "color":
+            settings["background_image"] = None
+            settings["background_color"] = self.palette().color(QPalette.ColorRole.Window).name()
+
+        with open(self.settings_file, 'w') as file:
+            json.dump(settings, file, ensure_ascii=False)
+
+    def load_settings(self):
+        if os.path.exists(self.settings_file):
+            with open(self.settings_file, 'r') as file:
+                file_content = file.read()
+                if file_content:
+                    settings = json.loads(file_content)
+
+                    bg_image = settings.get("background_image", None)
+                    bg_color = settings.get("background_color", None)
+
+                    if bg_image:
+                        self.theme.set_background_image(bg_image)
+                        self.setStyleSheet(self.theme.get_style_sheet())
+                    elif bg_color:
+                        self.setStyleSheet(f"background-color: {bg_color};")
+
+
+    def save_data_and_settings(self):
+        self.save_data()
+        self.save_settings()
