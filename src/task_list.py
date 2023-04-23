@@ -17,21 +17,4 @@ class TaskList:
 
     def remove_task(self, task):
         self.tasks.remove(task)
-
-    def move_task(self, task, new_position):
-        self.tasks.remove(task)
-        self.tasks.insert(new_position, task)
-
-    def find_task_by_title(self, title):
-        for task in self.tasks:
-            if task.title == title:
-                return task
-        return None
-
-    def get_all_completed_tasks(self):
-        return [task for task in self.tasks if task.completed]
-
-    def get_all_incomplete_tasks(self):
-        return [task for task in self.tasks if not task.completed]
-
-
+        

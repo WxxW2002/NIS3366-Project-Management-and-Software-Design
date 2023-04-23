@@ -2,6 +2,7 @@
 from datetime import datetime
 
 class Task:
+    # create task object
     def __init__(self, title, due_date=None, due_time=None, reminder_time=None, priority=None, repeat=None, files=None, subtasks=None, completed=False):
         self.title = title
         self.due_date = due_date if due_date else None
@@ -22,6 +23,8 @@ class Task:
             "completed": self.completed
         }
 
+    # set task attributes
+    
     def set_due_date(self, due_date):
         self.due_date = due_date
 
@@ -34,21 +37,8 @@ class Task:
     def set_repeat(self, repeat):
         self.repeat = repeat
 
-    def add_file(self, file):
-        self.files.append(file)
-
-    def remove_file(self, file):
-        self.files.remove(file)
-
-    def add_subtask(self, subtask):
-        self.subtasks.append(subtask)
-
-    def remove_subtask(self, subtask):
-        self.subtasks.remove(subtask)
-
     def set_completed(self, status):
         self.completed = status
      
-    # 设置到期时间
     def set_due_time(self, due_time):
         self.due_time = due_time

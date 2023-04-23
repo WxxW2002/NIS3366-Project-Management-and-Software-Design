@@ -5,11 +5,10 @@ from PyQt6.QtWidgets import QApplication, QSplashScreen
 from PyQt6.QtCore import QTimer, Qt, QRect
 from PyQt6.QtGui import QPixmap
 from ui import MainWindow
-
 from threading import Thread
 from notifications import Notifications
 
-
+# main function
 def main():
     # Create a QApplication instance
     app = QApplication(sys.argv)
@@ -33,7 +32,6 @@ def main():
     timer = QTimer()
     timer.singleShot(2000, splash_screen.close)
     timer.singleShot(2000, window.show)
-
 
     # Create a Notifications instance and start the check_and_notify loop in a new thread
     notifications = Notifications(window.task_list)
