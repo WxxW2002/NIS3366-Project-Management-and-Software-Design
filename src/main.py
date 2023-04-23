@@ -1,4 +1,5 @@
 # main.py
+import os
 import sys
 from PyQt6.QtWidgets import QApplication, QSplashScreen
 from PyQt6.QtCore import QTimer, Qt, QRect
@@ -14,7 +15,7 @@ def main():
     app = QApplication(sys.argv)
 
     # Splash screen
-    splash_image = QPixmap('./photos/Hogwarts.jpg')
+    splash_image = QPixmap(os.path.join("photos", "Hogwarts.jpg"))
     splash_screen = QSplashScreen(splash_image, Qt.WindowType.WindowStaysOnTopHint)
 
     # Center the splash screen on the screen
