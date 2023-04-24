@@ -223,6 +223,7 @@ class MainWindow(QMainWindow):
     def delete_task(self, item):
         row = self.task_list_widget.row(item)
         self.task_list_widget.takeItem(row)
+        self.task_list.remove_task(item.data(Qt.ItemDataRole.UserRole))
         self.save_data()
 
     # mark the task as completed
@@ -362,6 +363,8 @@ class MainWindow(QMainWindow):
                         task_item.setData(Qt.ItemDataRole.UserRole, task_obj)
 
                         self.task_list_widget.addItem(task_item)
+                        task = Task(task["title"], priority=task["priority"], repeat=task["repeat"], due_date=due_date, completed=task["completed"])
+                        self.task_list.create_task(task)
 
     # save task data to task_data.json
     def save_data(self, clear=False):
