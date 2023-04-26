@@ -27,6 +27,5 @@ class Notifications:
         Notification(
             title=title,
             description=message,
-            duration=5,  # Duration in seconds
-            urgency=Notification.URGENCY_CRITICAL
-        ).send()
+            duration=5  # Duration in seconds
+        )

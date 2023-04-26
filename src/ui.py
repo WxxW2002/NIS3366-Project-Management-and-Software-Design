@@ -223,8 +223,9 @@ class MainWindow(QMainWindow):
     def delete_task(self, item):
         row = self.task_list_widget.row(item)
         self.task_list_widget.takeItem(row)
-        self.task_list.remove_task(item.data(Qt.ItemDataRole.UserRole))
+        self.task_list.remove_task(item.data(Qt.ItemDataRole.UserRole).title)  # Pass task title
         self.save_data()
+
 
     # mark the task as completed
     def mark_task_completed(self, item):
@@ -355,8 +356,8 @@ class MainWindow(QMainWindow):
 
                         task_item.setForeground(QColor(0, 0, 0) if not task["completed"] else QColor(210, 180, 140))
 
-                         # Convert the due_date string back to a datetime object
-                        due_date = datetime.strptime(task["due_date"], '%Y-%m-%d %H:%M:%S')
+                         # Convert the due_date string back to a datetime object if not None
+                        due_date = datetime.strptime(task["due_date"], '%Y-%m-%d %H:%M:%S') if task["due_date"] else None
 
                         # Store the Task object in the QListWidgetItem's data
                         task_obj = Task(task["title"], priority=task["priority"], repeat=task["repeat"], due_date=due_date, completed=task["completed"])
@@ -377,7 +378,7 @@ class MainWindow(QMainWindow):
                 "title": task.title,
                 "priority": task.priority,
                 "repeat": task.repeat,
-                "due_date": task.due_date.strftime('%Y-%m-%d %H:%M:%S'),  # Convert datetime to string
+                "due_date": task.due_date.strftime('%Y-%m-%d %H:%M:%S') if task.due_date else None,  # Convert datetime to string
                 "completed": task.completed
             }
             task_data.append(task_dict)
