@@ -63,4 +63,4 @@ build&run:
  - [x] 提醒通知：当任务到期时，WX To Do会通过桌面通知的方式提醒用户
  - [x] 开机引导界面：在打开软件时，会有一个引导动画（动画图片可自定义）
 
-[github address](github.com/WxxW2002/WXToDo)
+[github address](https://github.com/WxxW2002/WXToDo/tree/main)
